@@ -1,4 +1,4 @@
-import { Book } from 'src/book/book.entity';
+import { BookEntity } from 'src/book/book.entity';
 import {
   Entity,
   Column,
@@ -15,7 +15,7 @@ export class GenreEntity {
   @Column()
   title: string;
 
-  @ManyToMany(() => Book)
+  @ManyToMany(() => BookEntity)
   @JoinTable()
-  book: Book[];
+  book: BookEntity[];
 }

@@ -1,5 +1,5 @@
+import { GenreEntity } from 'src/genre/genre.entity';
 import { Author } from 'src/author/author.entity';
-import { Genre } from 'src/genre/genre.entity';
 import {
   Entity,
   Column,
@@ -26,7 +26,7 @@ export class Book {
   @JoinTable()
   authors: Author[];
 
-  @ManyToMany(() => Genre)
+  @ManyToMany(() => GenreEntity)
   @JoinTable()
-  genre: Genre[];
+  genre: GenreEntity[];
 }

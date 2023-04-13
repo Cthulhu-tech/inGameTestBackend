@@ -1,4 +1,4 @@
-export const Genre = [
+export const GenreArray = [
   {
     title: 'Classics',
   },

@@ -13,9 +13,12 @@ export class Genre {
     private readonly genres: Repository<GenreEntity>,
   ) {}
 
-  private readonly Genre = [];
-  getAllGenre() {
-    return this.Genre;
+  async getAllGenre() {
+    const data = await this.genres.findAndCount();
+    return {
+      count: data[1],
+      data: data[0],
+    };
   }
 
   create(): Array<Promise<IGenre>> {

@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class Genre {
+export class GenreEntity {
   @PrimaryGeneratedColumn()
   id: number;
 

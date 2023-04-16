@@ -22,11 +22,17 @@ export class BookEntity {
   @Column()
   edition: string;
 
-  @ManyToMany(() => AuthorEntity)
-  @JoinTable()
+  @ManyToMany(() => AuthorEntity, (authors) => authors.books, {
+    cascade: ['insert', 'update'],
+  })
+  @JoinTable({
+    name: 'book_and_author',
+  })
   authors: AuthorEntity[];
 
-  @ManyToMany(() => GenreEntity)
-  @JoinTable()
+  @ManyToMany(() => GenreEntity, (genres) => genres.book)
+  @JoinTable({
+    name: 'book_and_genre',
+  })
   genre: GenreEntity[];
 }

@@ -1,19 +1,39 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { AuthorEntity } from 'src/author/author.entity';
+import { IBook, IBookEntity } from 'src/book/bookType';
+import { GenreEntity } from 'src/genre/genre.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BookEntity } from './book.entity';
-import { BookTypeBody } from './bookType';
+import { Author } from 'src/author/author';
+import { Genre } from 'src/genre/genre';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class Book {
+  private _author: Author;
+  private _genre: Genre;
   constructor(
     @InjectRepository(BookEntity)
     private readonly book: Repository<BookEntity>,
     @InjectRepository(AuthorEntity)
     private readonly author: Repository<AuthorEntity>,
-  ) {}
-
+    @InjectRepository(GenreEntity)
+    private readonly genre: Repository<GenreEntity>,
+  ) {
+    this._author = new Author(this.author);
+    this._genre = new Genre(this.genre);
+  }
+  async createBook(bodyBook: IBookEntity) {
+    return this.book.create(bodyBook);
+  }
+  async getBookById(id: number[]) {
+    return await this.book
+      .createQueryBuilder('book')
+      .leftJoinAndSelect('book.authors', 'authors')
+      .leftJoinAndSelect('book.genre', 'genre')
+      .where('book.id = :id', { id: id })
+      .getManyAndCount();
+  }
   async getAllBook() {
     const data = await this.book.findAndCount();
     return {
@@ -21,45 +41,62 @@ export class Book {
       data: data[0],
     };
   }
-  async createBook(bodyBook: BookTypeBody) {
+  async saveBook(bodyBook: IBook) {
     if (
+      !bodyBook.authors ||
       bodyBook.authors?.length <= 0 ||
       !bodyBook.edition ||
       !bodyBook.genre ||
+      bodyBook.genre?.length <= 0 ||
       !bodyBook.title ||
       !bodyBook.year_of_issue
     )
       throw new HttpException('Fill in all the fields', HttpStatus.BAD_REQUEST);
 
-    let authors = await this.author
-      .createQueryBuilder()
-      .where('firstName IN (:...firstName)', {
-        firstName: bodyBook.authors.map((author) => author.authors_name),
-      })
-      .andWhere('lastName IN (:...lastName)', {
-        lastName: bodyBook.authors.map((author) => author.author_surname),
-      })
-      .getMany();
+    const _book: IBookEntity = {} as IBookEntity;
 
-    if (authors.length <= 0) {
-      authors = this.author.create(
-        bodyBook.authors.map((author) => {
-          return {
-            firstName: author.authors_name,
-            lastName: author.author_surname,
-          };
-        }),
+    const findAuthor = await this._author.getAuthorsById(bodyBook.authors);
+    if (findAuthor.length < bodyBook.authors.length)
+      throw new HttpException('', HttpStatus.NOT_FOUND);
+
+    const findGanre = await this._genre.getGenreById(bodyBook.genre);
+    if (findGanre.length < bodyBook.genre.length)
+      throw new HttpException('', HttpStatus.NOT_FOUND);
+
+    _book.title = bodyBook.title;
+    _book.edition = bodyBook.edition;
+    _book.year_of_issue = bodyBook.year_of_issue;
+    _book.authors = findAuthor;
+    _book.genre = findGanre;
+
+    const { id } = await this.book.save(_book);
+
+    const findBookData = await this.getBookById([id]);
+
+    return {
+      data: findBookData[0],
+      count: findBookData[1],
+    };
+  }
+  async deleteBook(bookId: number) {
+    if (!bookId || isNaN(Number(bookId)))
+      throw new HttpException('Need book id', HttpStatus.BAD_REQUEST);
+
+    const findBook = await this.getBookById([bookId]);
+
+    if (findBook[1] <= 0)
+      throw new HttpException(
+        'Book: ' + bookId + ' - not found',
+        HttpStatus.BAD_REQUEST,
       );
-      this.author.insert(authors);
-    }
 
-    const data = await this.book.create({
-      title: bodyBook.title,
-      year_of_issue: bodyBook.year_of_issue,
-      edition: bodyBook.edition,
-      authors: authors,
-    });
-
-    return data;
+    return this.book
+      .createQueryBuilder()
+      .delete()
+      .where('id = :id', { id: bookId })
+      .execute();
+  }
+  async updateBook(bodyBook: IBook) {
+    return '';
   }
 }

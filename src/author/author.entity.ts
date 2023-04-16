@@ -5,23 +5,32 @@ import {
   PrimaryGeneratedColumn,
   ManyToMany,
   JoinTable,
+  Unique,
 } from 'typeorm';
 
 @Entity()
+@Unique(['firstName', 'lastName'])
 export class AuthorEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ name: 'firstName' })
   firstName: string;
 
-  @Column()
+  @Column({ name: 'lastName' })
   lastName: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+    name: 'dob',
+  })
   dob: string;
 
-  @ManyToMany(() => BookEntity)
-  @JoinTable()
-  book: BookEntity[];
+  @ManyToMany(() => BookEntity, (books) => books.authors, {
+    cascade: ['insert', 'update'],
+  })
+  @JoinTable({
+    name: 'book_and_author',
+  })
+  books: BookEntity[];
 }

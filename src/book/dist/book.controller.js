@@ -61,6 +61,13 @@ var BookController = /** @class */ (function () {
             });
         });
     };
+    BookController.prototype.getBookById = function (id) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.book.getBookById(id)];
+            });
+        });
+    };
     BookController.prototype.createBook = function (bodyBook) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
@@ -95,6 +102,11 @@ var BookController = /** @class */ (function () {
         common_1.Get(),
         common_1.HttpCode(200)
     ], BookController.prototype, "getAllBook");
+    __decorate([
+        common_1.Get(':id'),
+        common_1.HttpCode(200),
+        __param(0, common_1.Param('id'))
+    ], BookController.prototype, "getBookById");
     __decorate([
         common_1.Post(),
         common_1.HttpCode(201),

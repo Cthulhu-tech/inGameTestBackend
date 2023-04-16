@@ -26,13 +26,20 @@ export class Book {
   async createBook(bodyBook: IBookEntity) {
     return this.book.create(bodyBook);
   }
-  async getBookById(id: number[]) {
+  private async _getBookById(id: number[]) {
     return await this.book
       .createQueryBuilder('book')
       .leftJoinAndSelect('book.authors', 'authors')
       .leftJoinAndSelect('book.genre', 'genre')
       .where('book.id = :id', { id: id })
       .getManyAndCount();
+  }
+  async getBookById(bookId: number) {
+    const findBook = await this._getBookById([bookId]);
+    return {
+      count: findBook[1],
+      data: findBook[0],
+    };
   }
   async getAllBook() {
     const data = await this.book.findAndCount();
@@ -71,7 +78,7 @@ export class Book {
 
     const { id } = await this.book.save(_book);
 
-    const findBookData = await this.getBookById([id]);
+    const findBookData = await this._getBookById([id]);
 
     return {
       data: findBookData[0],
@@ -82,7 +89,7 @@ export class Book {
     if (!bookId || isNaN(Number(bookId)))
       throw new HttpException('Need book id', HttpStatus.BAD_REQUEST);
 
-    const findBook = await this.getBookById([bookId]);
+    const findBook = await this._getBookById([bookId]);
 
     if (findBook[1] <= 0)
       throw new HttpException(

@@ -19,6 +19,11 @@ export class BookController {
   async getAllBook() {
     return await this.book.getAllBook();
   }
+  @Get(':id')
+  @HttpCode(200)
+  async getBookById(@Param('id') id) {
+    return this.book.getBookById(id);
+  }
   @Post()
   @HttpCode(201)
   async createBook(@Body() bodyBook: IBook) {

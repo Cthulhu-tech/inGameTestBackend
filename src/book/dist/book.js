@@ -68,7 +68,7 @@ var Book = /** @class */ (function () {
             });
         });
     };
-    Book.prototype.getBookById = function (id) {
+    Book.prototype._getBookById = function (id) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -79,6 +79,22 @@ var Book = /** @class */ (function () {
                             .where('book.id = :id', { id: id })
                             .getManyAndCount()];
                     case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
+    Book.prototype.getBookById = function (bookId) {
+        return __awaiter(this, void 0, void 0, function () {
+            var findBook;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._getBookById([bookId])];
+                    case 1:
+                        findBook = _a.sent();
+                        return [2 /*return*/, {
+                                count: findBook[1],
+                                data: findBook[0]
+                            }];
                 }
             });
         });
@@ -133,7 +149,7 @@ var Book = /** @class */ (function () {
                         return [4 /*yield*/, this.book.save(_book)];
                     case 3:
                         id = (_c.sent()).id;
-                        return [4 /*yield*/, this.getBookById([id])];
+                        return [4 /*yield*/, this._getBookById([id])];
                     case 4:
                         findBookData = _c.sent();
                         return [2 /*return*/, {
@@ -152,7 +168,7 @@ var Book = /** @class */ (function () {
                     case 0:
                         if (!bookId || isNaN(Number(bookId)))
                             throw new common_1.HttpException('Need book id', common_1.HttpStatus.BAD_REQUEST);
-                        return [4 /*yield*/, this.getBookById([bookId])];
+                        return [4 /*yield*/, this._getBookById([bookId])];
                     case 1:
                         findBook = _a.sent();
                         if (findBook[1] <= 0)

@@ -51,12 +51,6 @@ export const GenreArray = [
     title: 'Western',
   },
   {
-    title: 'Romance',
-  },
-  {
-    title: 'Fantasy',
-  },
-  {
     title: 'Religion',
   },
 ];

@@ -1,12 +1,16 @@
 import { OrmConnection } from './utils/mysql/connect';
 import { AuthorModule } from './author/author.module';
 import { GenreModule } from './genre/genre.module';
+import { TextModule } from './text/text.module';
 import { BookModule } from './book/book.module';
 import { UserModule } from './user/user.module';
 
 import { EnvConfig } from './utils/env/envConfig';
 
 import { TokenMiddleware } from './middleware/token';
+
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 import {
   Module,
@@ -24,6 +28,10 @@ import { RoleMiddleware } from './middleware/role';
     AuthorModule,
     GenreModule,
     UserModule,
+    TextModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'file'),
+    }),
   ],
   controllers: [],
   providers: [],
@@ -41,6 +49,9 @@ export class AppModule implements NestModule {
         { path: '/genre/:id', method: RequestMethod.GET },
         { path: '/author/:id', method: RequestMethod.GET },
         { path: '/book/:id', method: RequestMethod.GET },
+        { path: '/text/:id', method: RequestMethod.GET },
+        { path: '/text', method: RequestMethod.GET },
+        { path: '/text/download/:id', method: RequestMethod.GET },
       )
       .forRoutes({ path: '*', method: RequestMethod.ALL });
   }

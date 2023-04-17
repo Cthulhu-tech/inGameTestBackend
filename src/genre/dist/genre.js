@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -46,16 +57,41 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 exports.Genre = void 0;
+var common_1 = require("@nestjs/common");
+var genre_1 = require("src/utils/mysql/seed/genre");
 var checkType_1 = require("src/utils/check/checkType");
 var genre_entity_1 = require("src/genre/genre.entity");
 var typeorm_1 = require("@nestjs/typeorm");
-var common_1 = require("@nestjs/common");
-var genre_1 = require("src/utils/mysql/seed/genre");
 var Genre = /** @class */ (function () {
     function Genre(genres) {
         this.genres = genres;
         this.check = new checkType_1.CheckType();
     }
+    // find genre
+    Genre.prototype.findGenre = function (bodyGenre) {
+        return __awaiter(this, void 0, void 0, function () {
+            var genres;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        genres = __assign({}, bodyGenre);
+                        delete genres.id;
+                        return [4 /*yield*/, this.genres.find({
+                                where: bodyGenre
+                            })];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
+    // create genre
+    Genre.prototype._createGenre = function (bodyGenre) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.genres.create(bodyGenre)];
+            });
+        });
+    };
     // return array genre
     Genre.prototype.getGenreById = function (genres) {
         return __awaiter(this, void 0, void 0, function () {
@@ -83,6 +119,105 @@ var Genre = /** @class */ (function () {
                                 count: data[1],
                                 data: data[0]
                             }];
+                }
+            });
+        });
+    };
+    // get method :id
+    Genre.prototype.getGenreByIdGet = function (genres) {
+        return __awaiter(this, void 0, void 0, function () {
+            var genre;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.genres
+                            .createQueryBuilder()
+                            .where('id IN (:id)', {
+                            id: genres
+                        })
+                            .getOne()];
+                    case 1:
+                        genre = _a.sent();
+                        if (!genre)
+                            throw new common_1.HttpException('Genre not found. Genre id: ' + genres, common_1.HttpStatus.NOT_FOUND);
+                        return [2 /*return*/, genre];
+                }
+            });
+        });
+    };
+    // delete method
+    Genre.prototype.deleteGenreById = function (genres) {
+        return __awaiter(this, void 0, void 0, function () {
+            var idNumber;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        idNumber = Number(genres);
+                        if (isNaN(idNumber))
+                            throw new common_1.HttpException('Need Genre id', common_1.HttpStatus.BAD_REQUEST);
+                        return [4 /*yield*/, this.getGenreByIdGet(idNumber)];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/, this.genres
+                                .createQueryBuilder()["delete"]()
+                                .where('id = :id', { id: idNumber })
+                                .execute()];
+                }
+            });
+        });
+    };
+    // patch method
+    Genre.prototype.updateGenreByIdPatch = function (bodyGenre) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                if (Object.keys(bodyGenre).length <= 1)
+                    throw new common_1.HttpException('At least one value is required', common_1.HttpStatus.BAD_REQUEST);
+                return [2 /*return*/, this.updateGenreByIdPut(bodyGenre)];
+            });
+        });
+    };
+    // put method
+    Genre.prototype.updateGenreByIdPut = function (bodyGenre) {
+        return __awaiter(this, void 0, void 0, function () {
+            var findGenre, newGenre;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (isNaN(bodyGenre.id))
+                            throw new common_1.HttpException('Need Author id', common_1.HttpStatus.BAD_REQUEST);
+                        if (!bodyGenre.title)
+                            throw new common_1.HttpException('Fill in all the fields', common_1.HttpStatus.BAD_REQUEST);
+                        return [4 /*yield*/, this.getGenreByIdGet(bodyGenre.id)];
+                    case 1:
+                        findGenre = _a.sent();
+                        findGenre.title = bodyGenre.title;
+                        return [4 /*yield*/, this._createGenre(findGenre)];
+                    case 2:
+                        newGenre = _a.sent();
+                        return [4 /*yield*/, this.genres.save(newGenre)];
+                    case 3: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
+    // post method
+    Genre.prototype.createGenre = function (bodyGenre) {
+        return __awaiter(this, void 0, void 0, function () {
+            var findGenre, newGenre;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!bodyGenre.title)
+                            throw new common_1.HttpException('Fill in all the fields', common_1.HttpStatus.BAD_REQUEST);
+                        return [4 /*yield*/, this.findGenre(bodyGenre)];
+                    case 1:
+                        findGenre = _a.sent();
+                        if (findGenre[0])
+                            throw new common_1.HttpException('This Genre already exists. Genre Id: ' + findGenre[0].id, common_1.HttpStatus.BAD_REQUEST);
+                        return [4 /*yield*/, this._createGenre(bodyGenre)];
+                    case 2:
+                        newGenre = _a.sent();
+                        return [4 /*yield*/, this.genres.save(newGenre)];
+                    case 3: return [2 /*return*/, _a.sent()];
                 }
             });
         });

@@ -9,6 +9,10 @@ export class GenreEntity {
   @Column({ unique: true })
   title: string;
 
-  @ManyToMany(() => BookEntity, { cascade: true })
+  @ManyToMany(() => BookEntity, {
+    cascade: ['insert', 'update'],
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   book: BookEntity[];
 }

@@ -30,7 +30,7 @@ export class Author {
   private async checkAuthorIsCreate(bodyAuthor: IAuthor, idNumber?: number) {
     const _findAuthor = await this.getAuthorByAllProperties(bodyAuthor);
 
-    if (Number(_findAuthor[0]?.id) === idNumber) return _findAuthor[0];
+    if (Number(_findAuthor[0]?.id) === Number(idNumber)) return _findAuthor[0];
     if (_findAuthor[0])
       throw new HttpException(
         'This author already exists. Author Id: ' + _findAuthor[0].id,
@@ -62,7 +62,6 @@ export class Author {
   async getAuthorByAllProperties(bodyAuthor: IAuthor) {
     const _author = { ...bodyAuthor };
     delete _author.id;
-
     return await this.author.find({
       where: _author,
     });
@@ -76,7 +75,7 @@ export class Author {
     const createAuthor = await this.createAuthor([bodyAuthor]);
     const saveAuthor = await this.saveAuthor(createAuthor);
 
-    await this.checkAuthorIsCreate(bodyAuthor);
+    await this.checkAuthorIsCreate(bodyAuthor, saveAuthor[0].id);
 
     const findAuthor = await this.getAuthorsById([Number(saveAuthor[0].id)]);
     return {

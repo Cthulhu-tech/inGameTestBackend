@@ -15,12 +15,13 @@ var user_module_1 = require("./user/user.module");
 var envConfig_1 = require("./utils/env/envConfig");
 var token_1 = require("./middleware/token");
 var common_1 = require("@nestjs/common");
+var role_1 = require("./middleware/role");
 var AppModule = /** @class */ (function () {
     function AppModule() {
     }
     AppModule.prototype.configure = function (consumer) {
         consumer
-            .apply(token_1.TokenMiddleware)
+            .apply(token_1.TokenMiddleware, role_1.RoleMiddleware)
             .exclude({ path: '/user/login', method: common_1.RequestMethod.POST }, { path: '/user/refresh', method: common_1.RequestMethod.POST }, { path: '/genre', method: common_1.RequestMethod.GET }, { path: '/author', method: common_1.RequestMethod.GET }, { path: '/book', method: common_1.RequestMethod.GET }, { path: '/genre/:id', method: common_1.RequestMethod.GET }, { path: '/author/:id', method: common_1.RequestMethod.GET }, { path: '/book/:id', method: common_1.RequestMethod.GET })
             .forRoutes({ path: '*', method: common_1.RequestMethod.ALL });
     };

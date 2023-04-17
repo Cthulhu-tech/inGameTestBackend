@@ -6,25 +6,24 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 exports.__esModule = true;
-exports.TokenMiddleware = void 0;
-var jsonwebtoken_1 = require("jsonwebtoken");
+exports.RoleMiddleware = void 0;
 var common_1 = require("@nestjs/common");
-var TokenMiddleware = /** @class */ (function () {
-    function TokenMiddleware() {
+var RoleMiddleware = /** @class */ (function () {
+    function RoleMiddleware() {
     }
-    TokenMiddleware.prototype.use = function (req, res, next) {
-        var token = req.headers['authorization'].split(' ')[1];
-        try {
-            req.body.payload = jsonwebtoken_1.verify(token, 'access');
+    RoleMiddleware.prototype.use = function (req, res, next) {
+        if (req.body.payload.role === 'admin') {
+            return next();
         }
-        catch (err) {
-            throw new common_1.HttpException('Token not Valid', common_1.HttpStatus.UNAUTHORIZED);
+        if ((req.body.payload.role === 'user' || !req.body.payload.role) &&
+            req.method === 'GET') {
+            return next();
         }
-        next();
+        throw new common_1.HttpException('You do not have rights to change', common_1.HttpStatus.FORBIDDEN);
     };
-    TokenMiddleware = __decorate([
+    RoleMiddleware = __decorate([
         common_1.Injectable()
-    ], TokenMiddleware);
-    return TokenMiddleware;
+    ], RoleMiddleware);
+    return RoleMiddleware;
 }());
-exports.TokenMiddleware = TokenMiddleware;
+exports.RoleMiddleware = RoleMiddleware;

@@ -10,7 +10,7 @@ import {
 @Injectable()
 export class TokenMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
-    const token = req.headers['authorization'].split(' ')[1];
+    const token = req.headers['authorization']?.split(' ')[1];
 
     try {
       req.body.payload = verify(token, 'access');

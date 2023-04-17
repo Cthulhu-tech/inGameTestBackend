@@ -77,7 +77,7 @@ var Genre = /** @class */ (function () {
                         genres = __assign({}, bodyGenre);
                         delete genres.id;
                         return [4 /*yield*/, this.genres.find({
-                                where: bodyGenre
+                                where: genres
                             })];
                     case 1: return [2 /*return*/, _a.sent()];
                 }

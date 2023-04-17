@@ -20,7 +20,7 @@ export class Genre {
     const genres = { ...bodyGenre };
     delete genres.id;
     return await this.genres.find({
-      where: bodyGenre,
+      where: genres,
     });
   }
   // create genre

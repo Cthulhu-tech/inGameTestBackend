@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-@Unique(['firstName', 'lastName'])
+@Unique(['firstName', 'lastName', 'dob'])
 export class AuthorEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -21,13 +21,16 @@ export class AuthorEntity {
   lastName: string;
 
   @Column({
+    type: 'date',
     nullable: true,
     name: 'dob',
   })
-  dob: string;
+  dob: Date | string;
 
   @ManyToMany(() => BookEntity, (books) => books.authors, {
     cascade: ['insert', 'update'],
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinTable({
     name: 'book_and_author',

@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -46,15 +57,40 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 exports.Author = void 0;
+var common_1 = require("@nestjs/common");
 var checkType_1 = require("src/utils/check/checkType");
 var typeorm_1 = require("@nestjs/typeorm");
 var author_entity_1 = require("./author.entity");
-var common_1 = require("@nestjs/common");
 var Author = /** @class */ (function () {
     function Author(author) {
         this.author = author;
         this.check = new checkType_1.CheckType();
     }
+    Author.prototype.checkDate = function (_date) {
+        var date = new Date(_date);
+        if (date.toString() === 'Invalid Date')
+            throw new common_1.HttpException('Need Valid date format: YYYY.MM.DD', common_1.HttpStatus.BAD_REQUEST);
+        if (date.toString().includes('Incorrect DATE value'))
+            throw new common_1.HttpException('Need correct DATE formate', common_1.HttpStatus.BAD_REQUEST);
+    };
+    Author.prototype.checkAuthorIsCreate = function (bodyAuthor, idNumber) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function () {
+            var _findAuthor;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.getAuthorByAllProperties(bodyAuthor)];
+                    case 1:
+                        _findAuthor = _b.sent();
+                        if (Number((_a = _findAuthor[0]) === null || _a === void 0 ? void 0 : _a.id) === idNumber)
+                            return [2 /*return*/, _findAuthor[0]];
+                        if (_findAuthor[0])
+                            throw new common_1.HttpException('This author already exists. Author Id: ' + _findAuthor[0].id, common_1.HttpStatus.BAD_REQUEST);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
     Author.prototype.createAuthor = function (authors) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
@@ -93,6 +129,123 @@ var Author = /** @class */ (function () {
                             })
                                 .getMany()];
                     case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
+    Author.prototype.getAuthorByAllProperties = function (bodyAuthor) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _author;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _author = __assign({}, bodyAuthor);
+                        delete _author.id;
+                        return [4 /*yield*/, this.author.find({
+                                where: _author
+                            })];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
+    Author.prototype.saveAuthorPost = function (bodyAuthor) {
+        return __awaiter(this, void 0, void 0, function () {
+            var createAuthor, saveAuthor, findAuthor;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!(bodyAuthor === null || bodyAuthor === void 0 ? void 0 : bodyAuthor.firstName) || !(bodyAuthor === null || bodyAuthor === void 0 ? void 0 : bodyAuthor.lastName) || !(bodyAuthor === null || bodyAuthor === void 0 ? void 0 : bodyAuthor.dob))
+                            throw new common_1.HttpException('Fill in all the fields', common_1.HttpStatus.BAD_REQUEST);
+                        this.checkDate(new Date(bodyAuthor === null || bodyAuthor === void 0 ? void 0 : bodyAuthor.dob));
+                        return [4 /*yield*/, this.createAuthor([bodyAuthor])];
+                    case 1:
+                        createAuthor = _a.sent();
+                        return [4 /*yield*/, this.saveAuthor(createAuthor)];
+                    case 2:
+                        saveAuthor = _a.sent();
+                        return [4 /*yield*/, this.checkAuthorIsCreate(bodyAuthor)];
+                    case 3:
+                        _a.sent();
+                        return [4 /*yield*/, this.getAuthorsById([Number(saveAuthor[0].id)])];
+                    case 4:
+                        findAuthor = _a.sent();
+                        return [2 /*return*/, {
+                                data: findAuthor[0]
+                            }];
+                }
+            });
+        });
+    };
+    Author.prototype.updateAuthorPut = function (bodyAuthor) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                if (!(bodyAuthor === null || bodyAuthor === void 0 ? void 0 : bodyAuthor.firstName) || !(bodyAuthor === null || bodyAuthor === void 0 ? void 0 : bodyAuthor.lastName) || !(bodyAuthor === null || bodyAuthor === void 0 ? void 0 : bodyAuthor.dob))
+                    throw new common_1.HttpException('Fill in all the fields', common_1.HttpStatus.BAD_REQUEST);
+                return [2 /*return*/, this.updateAuthorPatch(bodyAuthor)];
+            });
+        });
+    };
+    Author.prototype.updateAuthorPatch = function (bodyAuthor) {
+        return __awaiter(this, void 0, void 0, function () {
+            var idNumber, findAuthor, saveAuthor;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        idNumber = Number(bodyAuthor.id);
+                        if (Object.keys(bodyAuthor).length <= 1)
+                            throw new common_1.HttpException('At least one value is required', common_1.HttpStatus.BAD_REQUEST);
+                        if (isNaN(idNumber))
+                            throw new common_1.HttpException('Need Author id', common_1.HttpStatus.BAD_REQUEST);
+                        if (bodyAuthor.dob)
+                            this.checkDate(new Date(bodyAuthor === null || bodyAuthor === void 0 ? void 0 : bodyAuthor.dob));
+                        return [4 /*yield*/, this.getAuthorsById([idNumber])];
+                    case 1:
+                        findAuthor = _a.sent();
+                        if (findAuthor.length <= 0)
+                            throw new common_1.HttpException('Author not found', common_1.HttpStatus.NOT_FOUND);
+                        if (bodyAuthor.firstName)
+                            findAuthor[0].firstName = bodyAuthor.firstName;
+                        else
+                            bodyAuthor.firstName = findAuthor[0].firstName;
+                        if (bodyAuthor.lastName)
+                            findAuthor[0].lastName = bodyAuthor.lastName;
+                        else
+                            bodyAuthor.lastName = findAuthor[0].lastName;
+                        if (bodyAuthor.dob)
+                            findAuthor[0].dob = bodyAuthor.dob;
+                        else
+                            bodyAuthor.dob = findAuthor[0].dob;
+                        return [4 /*yield*/, this.checkAuthorIsCreate(bodyAuthor, idNumber)];
+                    case 2:
+                        _a.sent();
+                        findAuthor[0].id = idNumber;
+                        return [4 /*yield*/, this.author.save(__assign(__assign({}, findAuthor[0]), { id: findAuthor[0].id }))];
+                    case 3:
+                        saveAuthor = _a.sent();
+                        return [2 /*return*/, saveAuthor];
+                }
+            });
+        });
+    };
+    Author.prototype.deleteAuthor = function (id) {
+        return __awaiter(this, void 0, void 0, function () {
+            var idNumber, findAuthor;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        idNumber = Number(id);
+                        if (isNaN(idNumber))
+                            throw new common_1.HttpException('Need Author id', common_1.HttpStatus.BAD_REQUEST);
+                        return [4 /*yield*/, this.getAuthorsById([idNumber])];
+                    case 1:
+                        findAuthor = _a.sent();
+                        if (findAuthor.length <= 0)
+                            throw new common_1.HttpException('Author not found', common_1.HttpStatus.NOT_FOUND);
+                        return [2 /*return*/, this.author
+                                .createQueryBuilder()["delete"]()
+                                .where('id = :id', { id: idNumber })
+                                .execute()];
                 }
             });
         });

@@ -9,6 +9,7 @@ import {
   Post,
   Delete,
   Param,
+  Put,
 } from '@nestjs/common';
 @Controller('book')
 export class BookController {
@@ -34,9 +35,16 @@ export class BookController {
   async delete(@Param('id') id) {
     return await this.book.deleteBook(id);
   }
-  @Patch()
+  @Patch(':id')
   @HttpCode(201)
-  async updateBook(@Body() bodyBook: IBook) {
-    return await this.book.updateBook(bodyBook);
+  async updateBookPatch(@Param('id') id, @Body() bodyBook: IBook) {
+    bodyBook.id = id;
+    return await this.book.updateBookPatch(bodyBook);
+  }
+  @Put(':id')
+  @HttpCode(201)
+  async updateBookPut(@Param('id') id, @Body() bodyBook: IBook) {
+    bodyBook.id = id;
+    return await this.book.updateBookPut(bodyBook);
   }
 }

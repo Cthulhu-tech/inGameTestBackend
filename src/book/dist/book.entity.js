@@ -27,14 +27,20 @@ var BookEntity = /** @class */ (function () {
     ], BookEntity.prototype, "edition");
     __decorate([
         typeorm_1.ManyToMany(function () { return author_entity_1.AuthorEntity; }, function (authors) { return authors.books; }, {
-            cascade: ['insert', 'update']
+            cascade: ['insert', 'update'],
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
         }),
         typeorm_1.JoinTable({
             name: 'book_and_author'
         })
     ], BookEntity.prototype, "authors");
     __decorate([
-        typeorm_1.ManyToMany(function () { return genre_entity_1.GenreEntity; }, function (genres) { return genres.book; }),
+        typeorm_1.ManyToMany(function () { return genre_entity_1.GenreEntity; }, function (genres) { return genres.book; }, {
+            cascade: ['insert', 'update'],
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
+        }),
         typeorm_1.JoinTable({
             name: 'book_and_genre'
         })

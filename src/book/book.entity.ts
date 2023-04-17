@@ -24,13 +24,19 @@ export class BookEntity {
 
   @ManyToMany(() => AuthorEntity, (authors) => authors.books, {
     cascade: ['insert', 'update'],
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinTable({
     name: 'book_and_author',
   })
   authors: AuthorEntity[];
 
-  @ManyToMany(() => GenreEntity, (genres) => genres.book)
+  @ManyToMany(() => GenreEntity, (genres) => genres.book, {
+    cascade: ['insert', 'update'],
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   @JoinTable({
     name: 'book_and_genre',
   })

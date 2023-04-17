@@ -122,6 +122,8 @@ var Book = /** @class */ (function () {
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
+                        if (bodyBook.id && isNaN(Number(bodyBook.id)))
+                            throw new common_1.HttpException('Need book id', common_1.HttpStatus.BAD_REQUEST);
                         if (!bodyBook.authors ||
                             ((_a = bodyBook.authors) === null || _a === void 0 ? void 0 : _a.length) <= 0 ||
                             !bodyBook.edition ||
@@ -135,12 +137,14 @@ var Book = /** @class */ (function () {
                     case 1:
                         findAuthor = _c.sent();
                         if (findAuthor.length < bodyBook.authors.length)
-                            throw new common_1.HttpException('', common_1.HttpStatus.NOT_FOUND);
+                            throw new common_1.HttpException('Authors not found', common_1.HttpStatus.NOT_FOUND);
                         return [4 /*yield*/, this._genre.getGenreById(bodyBook.genre)];
                     case 2:
                         findGanre = _c.sent();
                         if (findGanre.length < bodyBook.genre.length)
-                            throw new common_1.HttpException('', common_1.HttpStatus.NOT_FOUND);
+                            throw new common_1.HttpException('Genre not found', common_1.HttpStatus.NOT_FOUND);
+                        if (bodyBook === null || bodyBook === void 0 ? void 0 : bodyBook.id)
+                            _book.id = Number(bodyBook.id);
                         _book.title = bodyBook.title;
                         _book.edition = bodyBook.edition;
                         _book.year_of_issue = bodyBook.year_of_issue;
@@ -181,10 +185,74 @@ var Book = /** @class */ (function () {
             });
         });
     };
-    Book.prototype.updateBook = function (bodyBook) {
+    Book.prototype.updateBookPatch = function (bodyBook) {
+        var _a, _b;
+        return __awaiter(this, void 0, void 0, function () {
+            var _book, findBookData, findAuthor, findGanre, id, _findBookData;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        _book = {};
+                        if (bodyBook.id && isNaN(Number(bodyBook.id)))
+                            throw new common_1.HttpException('Need book id', common_1.HttpStatus.BAD_REQUEST);
+                        _book.id = Number(bodyBook.id);
+                        return [4 /*yield*/, this._getBookById([bodyBook.id])];
+                    case 1:
+                        findBookData = _c.sent();
+                        if (!(((_a = bodyBook === null || bodyBook === void 0 ? void 0 : bodyBook.authors) === null || _a === void 0 ? void 0 : _a.length) > 0)) return [3 /*break*/, 3];
+                        return [4 /*yield*/, this._author.getAuthorsById(bodyBook.authors)];
+                    case 2:
+                        findAuthor = _c.sent();
+                        if (findAuthor.length < bodyBook.authors.length)
+                            throw new common_1.HttpException('Authors not found', common_1.HttpStatus.NOT_FOUND);
+                        _book.authors = findAuthor;
+                        return [3 /*break*/, 4];
+                    case 3:
+                        _book.authors = findBookData[0][0].authors;
+                        _c.label = 4;
+                    case 4:
+                        if (!(((_b = bodyBook === null || bodyBook === void 0 ? void 0 : bodyBook.authors) === null || _b === void 0 ? void 0 : _b.length) > 0)) return [3 /*break*/, 6];
+                        return [4 /*yield*/, this._genre.getGenreById(bodyBook.genre)];
+                    case 5:
+                        findGanre = _c.sent();
+                        if (findGanre.length < bodyBook.genre.length)
+                            throw new common_1.HttpException('Genre not found', common_1.HttpStatus.NOT_FOUND);
+                        _book.genre = findGanre;
+                        return [3 /*break*/, 7];
+                    case 6:
+                        _book.genre = findBookData[0][0].genre;
+                        _c.label = 7;
+                    case 7:
+                        if (bodyBook === null || bodyBook === void 0 ? void 0 : bodyBook.title)
+                            _book.title = bodyBook.title;
+                        else
+                            _book.title = findBookData[0][0].title;
+                        if (bodyBook === null || bodyBook === void 0 ? void 0 : bodyBook.edition)
+                            _book.edition = bodyBook.edition;
+                        else
+                            _book.edition = findBookData[0][0].edition;
+                        if (bodyBook === null || bodyBook === void 0 ? void 0 : bodyBook.year_of_issue)
+                            _book.year_of_issue = bodyBook.year_of_issue;
+                        else
+                            _book.year_of_issue = findBookData[0][0].year_of_issue;
+                        return [4 /*yield*/, this.book.save(_book)];
+                    case 8:
+                        id = (_c.sent()).id;
+                        return [4 /*yield*/, this._getBookById([id])];
+                    case 9:
+                        _findBookData = _c.sent();
+                        return [2 /*return*/, {
+                                data: _findBookData[0],
+                                count: _findBookData[1]
+                            }];
+                }
+            });
+        });
+    };
+    Book.prototype.updateBookPut = function (bodyBook) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, ''];
+                return [2 /*return*/, this.saveBook(bodyBook)];
             });
         });
     };

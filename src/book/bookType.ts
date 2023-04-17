@@ -2,6 +2,7 @@ import { IAuthor } from 'src/author/authorType';
 import { IGenre } from 'src/genre/genresType';
 
 export type Book = {
+  id?: number;
   title: string;
   year_of_issue: string;
   edition: string;

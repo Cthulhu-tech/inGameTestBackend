@@ -88,11 +88,25 @@ var BookController = /** @class */ (function () {
             });
         });
     };
-    BookController.prototype.updateBook = function (bodyBook) {
+    BookController.prototype.updateBookPatch = function (id, bodyBook) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.book.updateBook(bodyBook)];
+                    case 0:
+                        bodyBook.id = id;
+                        return [4 /*yield*/, this.book.updateBookPatch(bodyBook)];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
+    BookController.prototype.updateBookPut = function (id, bodyBook) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        bodyBook.id = id;
+                        return [4 /*yield*/, this.book.updateBookPut(bodyBook)];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });
@@ -118,10 +132,15 @@ var BookController = /** @class */ (function () {
         __param(0, common_1.Param('id'))
     ], BookController.prototype, "delete");
     __decorate([
-        common_1.Patch(),
+        common_1.Patch(':id'),
         common_1.HttpCode(201),
-        __param(0, common_1.Body())
-    ], BookController.prototype, "updateBook");
+        __param(0, common_1.Param('id')), __param(1, common_1.Body())
+    ], BookController.prototype, "updateBookPatch");
+    __decorate([
+        common_1.Put(':id'),
+        common_1.HttpCode(201),
+        __param(0, common_1.Param('id')), __param(1, common_1.Body())
+    ], BookController.prototype, "updateBookPut");
     BookController = __decorate([
         common_1.Controller('book')
     ], BookController);

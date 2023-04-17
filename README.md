@@ -1,3 +1,61 @@
+<p align="start">
+ cors не настраивал, из-за этого могут быть проблемы при тестировании со стороны браузер
+</p>
+
+<p align="start">
+ Проверял все через postman
+</p>
+
+<p align="start">
+ Примеры запросов представлены на картинке
+</p>
+
+<p align="start">
+ Постарался реализовать всё что требовалось от тз
+</p>
+
+<p align="center">
+  /user/refresh - post - проверяет токен сохраненый в cookie (cookie - httpOnly для защиты от XSS атак)
+</p>
+
+![Alt text](/image/Screenshot%20from%202023-04-18%2001-14-27.png?raw=true "Optional Title")
+
+<p align="center">
+  /text/:id - get - выдает список всех текстов связанных с книгой по id (реализована без связи с таблицей book_entity, хотя так было бы правильнее)
+</p>
+
+![Alt text](/image/Screenshot%20from%202023-04-18%2001-13-43.png?raw=true "Optional Title")
+
+<p align="center">
+  /text/upload - post - создаем книгу
+</p>
+
+![Alt text](/image/Screenshot%20from%202023-04-18%2001-14-09.png?raw=true "Optional Title")
+
+<p align="center">
+  /login - post
+</p>
+
+![Alt text](/image/Screenshot%20from%202023-04-18%2001-12-38.png?raw=true "Optional Title")
+
+<p align="center">
+  /book - post
+</p>
+
+![Alt text](/image/Screenshot%20from%202023-04-18%2001-12-44.png?raw=true "Optional Title")
+
+<p align="center">
+  /author - post
+</p>
+
+![Alt text](/image/Screenshot%20from%202023-04-18%2001-13-15.png?raw=true "Optional Title")
+
+<p align="center">
+  /download/:id - post
+</p>
+
+![Alt text](/image/Screenshot%20from%202023-04-18%2001-13-30.png?raw=true "Optional Title")
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
 </p>
